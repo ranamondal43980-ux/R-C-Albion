@@ -372,7 +372,7 @@ document.getElementById('link-discord').addEventListener('click', (e) => {
 
 document.getElementById('link-bug').addEventListener('click', (e) => {
     e.preventDefault();
-    window.open('https://discord.gg/t3zv5NUB8R', '_blank');
+    window.open('https://discord.gg/PrUpUfptjM', '_blank');
 });
 
 document.getElementById('bug-submit').addEventListener('click', () => {
