@@ -366,7 +366,7 @@ const bugInput = document.getElementById('bug-input');
 
 document.getElementById('link-discord').addEventListener('click', (e) => {
     e.preventDefault();
-    window.open('https://discord.gg/yourinvitecode', '_blank');
+    window.open('https://discord.gg/t3zv5NUB8R', '_blank');
 });
 
 document.getElementById('link-bug').addEventListener('click', (e) => { e.preventDefault(); modalBug.classList.remove('hidden'); });
