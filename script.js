@@ -369,18 +369,7 @@ document.getElementById('link-discord').addEventListener('click', (e) => {
     window.open('https://discord.gg/yourinvitecode', '_blank');
 });
 
-document.getElementById('link-bug').addEventListener('click', (e) => { e.preventDefault(); modalBug.classList.remove('hidden'); });
-document.getElementById('bug-close').addEventListener('click', () => modalBug.classList.add('hidden'));
 
-document.getElementById('bug-submit').addEventListener('click', () => {
-    if (bugInput.value.trim() !== '') {
-        alert('Thank you! Your bug report has been submitted.');
-        bugInput.value = '';
-        modalBug.classList.add('hidden');
-    } else {
-        alert('Please describe the bug before submitting.');
-    }
-});
 
 document.getElementById('link-support').addEventListener('click', (e) => { e.preventDefault(); modalSupport.classList.remove('hidden'); });
 document.getElementById('support-close').addEventListener('click', () => modalSupport.classList.add('hidden'));
