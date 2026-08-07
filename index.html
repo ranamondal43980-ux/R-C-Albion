@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>R&C Albion Calculator</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
     <div class="app-wrapper">
@@ -14,8 +16,10 @@
         <header class="app-header">
             <div class="logo-container" id="home-logo" style="cursor: pointer;">
                 <svg width="45" height="45" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="50" cy="50" r="46" fill="none" stroke="var(--gold-muted)" stroke-width="2" stroke-dasharray="4 6" />
-                    <path d="M 25 45 L 75 45 L 65 85 L 35 85 Z" fill="var(--slot-bg)" stroke="var(--gold-bright)" stroke-width="3" stroke-linejoin="round"/>
+                    <circle cx="50" cy="50" r="46" fill="none" stroke="var(--gold-muted)" stroke-width="2"
+                        stroke-dasharray="4 6" />
+                    <path d="M 25 45 L 75 45 L 65 85 L 35 85 Z" fill="var(--slot-bg)" stroke="var(--gold-bright)"
+                        stroke-width="3" stroke-linejoin="round" />
                     <path d="M 50 15 L 68 45 L 32 45 Z" fill="var(--gold-bright)" />
                     <path d="M 50 15 L 68 45 L 50 45 Z" fill="#fff" opacity="0.4" />
                     <polygon points="50,55 58,65 50,75 42,65" fill="var(--profit-green)" />
@@ -39,12 +43,15 @@
                 <div class="hero-content">
                     <span class="hero-badge">Albion Online Refining</span>
                     <h1 class="hero-title">Master Your Refining Empire</h1>
-                    <p class="hero-desc">Stop guessing your profit margins. Maximize your silver with precise Return Rates (RRR), city bonuses, focus calculations, and real-time market tax breakdowns.</p>
+                    <p class="hero-desc">Stop guessing your profit margins. Maximize your silver with precise Return
+                        Rates (RRR), city bonuses, focus calculations, and real-time market tax breakdowns.</p>
                     <div class="hero-buttons">
-                        <button class="hero-btn-primary" onclick="document.querySelector('.header-nav .nav-link[data-target=\'calculator\']').click()">
+                        <button class="hero-btn-primary"
+                            onclick="document.querySelector('.header-nav .nav-link[data-target=\'calculator\']').click()">
                             Launch Calculator
                         </button>
-                        <button class="hero-btn-secondary" onclick="document.querySelector('.header-nav .nav-link[data-target=\'patchnotes\']').click()">
+                        <button class="hero-btn-secondary"
+                            onclick="document.querySelector('.header-nav .nav-link[data-target=\'patchnotes\']').click()">
                             View Patch Notes
                         </button>
                     </div>
@@ -55,7 +62,7 @@
         <!-- VIEW 1: THE CALCULATOR -->
         <div id="view-calculator" class="app-view hidden">
             <div class="calculator-container">
-                
+
                 <!-- SECTION 1: MATERIAL SELECTION -->
                 <div class="section">
                     <div class="section-header">Material Selection</div>
@@ -67,11 +74,21 @@
                                     <span class="dropdown-placeholder">Select Item</span>
                                 </div>
                                 <div class="dropdown-options" id="options-res">
-                                    <div class="dropdown-option" data-value="ore"><img src="https://render.albiononline.com/v1/item/T4_ORE.png" alt="Ore"> Ore</div>
-                                    <div class="dropdown-option" data-value="wood"><img src="https://render.albiononline.com/v1/item/T4_WOOD.png" alt="Wood"> Wood</div>
-                                    <div class="dropdown-option" data-value="hide"><img src="https://render.albiononline.com/v1/item/T4_HIDE.png" alt="Hide"> Hide</div>
-                                    <div class="dropdown-option" data-value="fiber"><img src="https://render.albiononline.com/v1/item/T4_FIBER.png" alt="Fiber"> Fiber</div>
-                                    <div class="dropdown-option" data-value="rock"><img src="https://render.albiononline.com/v1/item/T4_ROCK.png" alt="Rock"> Rock</div>
+                                    <div class="dropdown-option" data-value="ore"><img
+                                            src="https://render.albiononline.com/v1/item/T4_ORE.png" alt="Ore"> Ore
+                                    </div>
+                                    <div class="dropdown-option" data-value="wood"><img
+                                            src="https://render.albiononline.com/v1/item/T4_WOOD.png" alt="Wood"> Wood
+                                    </div>
+                                    <div class="dropdown-option" data-value="hide"><img
+                                            src="https://render.albiononline.com/v1/item/T4_HIDE.png" alt="Hide"> Hide
+                                    </div>
+                                    <div class="dropdown-option" data-value="fiber"><img
+                                            src="https://render.albiononline.com/v1/item/T4_FIBER.png" alt="Fiber">
+                                        Fiber</div>
+                                    <div class="dropdown-option" data-value="rock"><img
+                                            src="https://render.albiononline.com/v1/item/T4_ROCK.png" alt="Rock"> Rock
+                                    </div>
                                 </div>
                             </div>
                             <input type="hidden" id="res-type" value="">
@@ -98,7 +115,7 @@
                                 <option value=".4">.4</option>
                             </select>
                         </div>
-                        
+
                         <div class="input-group">
                             <label>City Location</label>
                             <div class="custom-dropdown" id="dropdown-city">
@@ -107,12 +124,13 @@
                             </div>
                             <input type="hidden" id="city" value="thetford">
                         </div>
-                        
+
                         <div class="input-group focus-group">
                             <label class="checkbox-label">
                                 <input type="checkbox" id="use-focus"> Use Focus
                             </label>
-                            <input type="number" id="focus-cost" placeholder="Focus per item" value="100" class="hidden">
+                            <input type="number" id="focus-cost" placeholder="Focus per item" value="100"
+                                class="hidden">
                         </div>
                     </div>
                 </div>
@@ -147,17 +165,20 @@
                             <label id="label-prev-price">Previous Tier Price</label>
                             <input type="number" id="prev-price" value="0" min="0" disabled>
                         </div>
-                        
+
                         <div class="input-group full-width" style="margin-top: -5px;">
-                            <label class="checkbox-label" style="color: var(--text-muted); font-weight: normal; font-size: 0.9rem; text-transform: none; letter-spacing: 0;">
-                                <input type="checkbox" id="buy-order-fee"> Add 2.5% Setup Fee for Materials (Used Buy Orders)
+                            <label class="checkbox-label"
+                                style="color: var(--text-muted); font-weight: normal; font-size: 0.9rem; text-transform: none; letter-spacing: 0;">
+                                <input type="checkbox" id="buy-order-fee"> Add 2.5% Setup Fee for Materials (Used Buy
+                                Orders)
                             </label>
                         </div>
 
                         <div class="full-width-hr"></div>
 
                         <div class="input-group">
-                            <label>Station Tax (Per 100) <span class="tooltip-icon" data-tooltip="The usage fee set by the crafting station owner.">?</span></label>
+                            <label>Station Tax (Per 100) <span class="tooltip-icon"
+                                    data-tooltip="The usage fee set by the crafting station owner.">?</span></label>
                             <input type="number" id="station-tax" value="0" min="0">
                         </div>
                         <div class="input-group">
@@ -166,12 +187,16 @@
                         </div>
 
                         <div class="input-group full-width">
-                            <label>Sell Order Tax & Setup <span class="tooltip-icon" data-tooltip="The fee the market charges you when you sell the final item.">?</span></label>
+                            <label>Sell Order Tax & Setup <span class="tooltip-icon"
+                                    data-tooltip="The fee the market charges you when you sell the final item.">?</span></label>
                             <div class="custom-dropdown" id="dropdown-tax">
-                                <div class="dropdown-selected" id="selected-tax">Premium Account (4% Tax + 2.5% Setup) = 6.5%</div>
+                                <div class="dropdown-selected" id="selected-tax">Premium Account (4% Tax + 2.5% Setup) =
+                                    6.5%</div>
                                 <div class="dropdown-options" id="options-tax">
-                                    <div class="dropdown-option" data-value="0.065">Premium Account (4% Tax + 2.5% Setup) = 6.5%</div>
-                                    <div class="dropdown-option" data-value="0.105">No Premium (8% Tax + 2.5% Setup) = 10.5%</div>
+                                    <div class="dropdown-option" data-value="0.065">Premium Account (4% Tax + 2.5%
+                                        Setup) = 6.5%</div>
+                                    <div class="dropdown-option" data-value="0.105">No Premium (8% Tax + 2.5% Setup) =
+                                        10.5%</div>
                                     <div class="dropdown-option" data-value="0">Direct Trade (0% Fee)</div>
                                 </div>
                             </div>
@@ -189,7 +214,8 @@
                             <span id="out-mat-cost">0</span>
                         </div>
                         <div class="result-item">
-                            <span>Returned Materials (<span id="out-rrr">0.0%</span>) <span class="tooltip-icon" data-tooltip="The monetary value of materials kept via return rates.">?</span></span>
+                            <span>Returned Materials (<span id="out-rrr">0.0%</span>) <span class="tooltip-icon"
+                                    data-tooltip="The monetary value of materials kept via return rates.">?</span></span>
                             <span id="out-returns" class="positive">+0</span>
                         </div>
                         <div class="result-item">
@@ -210,7 +236,8 @@
                             <span id="out-revenue">0</span>
                         </div>
                         <div class="result-item">
-                            <span>Break-even Price <span class="tooltip-icon" data-tooltip="Minimum price required to cover all expenses and taxes.">?</span></span>
+                            <span>Break-even Price <span class="tooltip-icon"
+                                    data-tooltip="Minimum price required to cover all expenses and taxes.">?</span></span>
                             <span id="out-breakeven">0.00</span>
                         </div>
                         <hr>
@@ -219,11 +246,13 @@
                             <span id="out-profit">0</span>
                         </div>
                         <div class="result-item metrics-row">
-                            <span>ROI (Return on Investment) <span class="tooltip-icon" data-tooltip="Percentage profit made relative to total capital spent.">?</span></span>
+                            <span>ROI (Return on Investment) <span class="tooltip-icon"
+                                    data-tooltip="Percentage profit made relative to total capital spent.">?</span></span>
                             <span id="out-roi">0.00%</span>
                         </div>
                         <div class="result-item metrics-row" id="silver-focus-row" style="display: none;">
-                            <span>Silver / Focus <span class="tooltip-icon" data-tooltip="Net silver earned per 1 point of focus spent.">?</span></span>
+                            <span>Silver / Focus <span class="tooltip-icon"
+                                    data-tooltip="Net silver earned per 1 point of focus spent.">?</span></span>
                             <span id="out-silver-focus">0 / point</span>
                         </div>
                     </div>
@@ -260,8 +289,12 @@
         <div id="view-about" class="app-view hidden">
             <div class="info-card">
                 <h2>About R&C Albion</h2>
-                <p><strong>R&C Albion</strong> (Refining Calculator) is a high-performance web tool built specifically for Albion Online players. Our mission is to take the guesswork out of market flipping and manufacturing.</p>
-                <p>Whether you are calculating Resource Return Rates (RRR) in Royal City refining bonuses, factoring in station usage fees, or tracking your exact Return on Investment (ROI), R&C Albion provides lightning-fast accuracy to maximize your silver profits.</p>
+                <p><strong>R&C Albion</strong> (Refining Calculator) is a high-performance web tool built specifically
+                    for Albion Online players. Our mission is to take the guesswork out of market flipping and
+                    manufacturing.</p>
+                <p>Whether you are calculating Resource Return Rates (RRR) in Royal City refining bonuses, factoring in
+                    station usage fees, or tracking your exact Return on Investment (ROI), R&C Albion provides
+                    lightning-fast accuracy to maximize your silver profits.</p>
             </div>
         </div>
 
@@ -271,10 +304,10 @@
         <footer class="app-footer">
             <p>R&C Albion | Advanced Refining Matrix</p>
             <div class="footer-links">
-                <a href="#" id="https://discord.gg/t3zv5NUB8R">Discord Server</a>
+                <a href="#" id="link-discord">Discord Server</a>
                 <a href="#" id="link-bug">Report a Bug</a>
                 <a href="#" id="link-support">Support the Creator</a>
-                
+
                 <!-- Updated Contact Us Link -->
                 <a href="mailto:your.email@example.com?subject=Business Inquiry" id="link-contact">Contact Us</a>
             </div>
@@ -308,9 +341,10 @@
                 <button id="support-close" class="copy-btn">Close</button>
             </div>
         </div>
-        
+
     </div>
 
     <script src="script.js"></script>
 </body>
+
 </html>
