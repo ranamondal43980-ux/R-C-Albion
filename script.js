@@ -369,8 +369,11 @@ document.getElementById('link-discord').addEventListener('click', (e) => {
     window.open('https://discord.gg/t3zv5NUB8R', '_blank');
 });
 
-document.getElementById('link-bug').addEventListener('click', (e) => { e.preventDefault(); modalBug.classList.remove('hidden'); });
-document.getElementById('bug-close').addEventListener('click', () => modalBug.classList.add('hidden'));
+
+document.getElementById('link-bug').addEventListener('click', (e) => {
+    e.preventDefault();
+    window.open('https://discord.gg/t3zv5NUB8R', '_blank');
+});
 
 document.getElementById('bug-submit').addEventListener('click', () => {
     if (bugInput.value.trim() !== '') {
