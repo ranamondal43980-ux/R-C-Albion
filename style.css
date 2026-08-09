@@ -786,6 +786,15 @@ hr {
 .form-status.success { color: var(--profit-green); }
 .form-status.error { color: var(--loss-red); }
 
+.hp-field {
+    position: absolute !important;
+    left: -9999px !important;
+    width: 1px !important;
+    height: 1px !important;
+    opacity: 0 !important;
+    pointer-events: none;
+}
+
 .support-box a {
     color: var(--gold-bright);
     text-decoration: underline;
