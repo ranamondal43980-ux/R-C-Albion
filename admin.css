@@ -123,3 +123,39 @@
     color: var(--text-muted);
     word-break: break-all;
 }
+
+.report-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.report-btn {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.78rem;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid var(--border-inner);
+    background: var(--slot-bg);
+    color: var(--text-main);
+    transition: all 0.2s ease;
+}
+
+.report-btn:hover { filter: brightness(1.3); }
+.report-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.resolve-btn {
+    border-color: var(--profit-green);
+    color: var(--profit-green);
+}
+
+.delete-btn {
+    border-color: var(--loss-red);
+    color: var(--loss-red);
+}
+
+.report-status.status-resolved {
+    background: var(--profit-glow);
+    color: var(--profit-green);
+}
