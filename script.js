@@ -271,7 +271,100 @@ function calculate() {
     } else {
         focusRow.style.display = 'none';
     }
+
+    updateStickyBar();
+    saveState();
 }
+
+// --- LOCAL STORAGE PERSISTENCE ---
+const STORAGE_KEY = 'rc-albion-calculator-state';
+const PERSISTED_IDS = [
+    'res-type', 'tier', 'enchant', 'city', 'use-focus', 'focus-cost',
+    'raw-qty', 'prev-qty', 'raw-price', 'prev-price', 'buy-order-fee',
+    'station-tax', 'sell-price', 'market-tax'
+];
+
+function saveState() {
+    const state = {};
+    PERSISTED_IDS.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        state[id] = el.type === 'checkbox' ? el.checked : el.value;
+    });
+    // Also persist the visible label text for custom dropdowns
+    state['selected-res-html'] = document.getElementById('selected-res').innerHTML;
+    state['selected-tier-html'] = document.getElementById('selected-tier').innerHTML;
+    state['selected-city-html'] = document.getElementById('selected-city').innerHTML;
+    state['selected-tax-html'] = document.getElementById('selected-tax').innerHTML;
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {
+        console.warn('Could not save calculator state:', e);
+    }
+}
+
+function loadState() {
+    let raw;
+    try {
+        raw = localStorage.getItem(STORAGE_KEY);
+    } catch (e) {
+        return;
+    }
+    if (!raw) return;
+
+    let state;
+    try {
+        state = JSON.parse(raw);
+    } catch (e) {
+        return;
+    }
+
+    // Restore resource type & tier first so dependent dropdowns rebuild correctly
+    if (state['res-type']) {
+        resTypeSelect.value = state['res-type'];
+        resTypeSelect.dispatchEvent(new Event('change'));
+    }
+    if (state['tier']) {
+        tierSelect.value = state['tier'];
+        if (state['selected-tier-html']) document.getElementById('selected-tier').innerHTML = state['selected-tier-html'];
+    }
+    if (state['selected-res-html']) document.getElementById('selected-res').innerHTML = state['selected-res-html'];
+    if (state['selected-city-html']) document.getElementById('selected-city').innerHTML = state['selected-city-html'];
+    if (state['selected-tax-html']) document.getElementById('selected-tax').innerHTML = state['selected-tax-html'];
+
+    PERSISTED_IDS.forEach(id => {
+        if (!(id in state)) return;
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (el.type === 'checkbox') {
+            el.checked = state[id];
+        } else {
+            el.value = state[id];
+        }
+    });
+}
+
+// --- MOBILE STICKY PROFIT BAR ---
+const stickyBar = document.getElementById('sticky-profit-bar');
+const stickyProfitValue = document.getElementById('sticky-profit-value');
+const stickyRoiValue = document.getElementById('sticky-roi-value');
+
+function updateStickyBar() {
+    if (!stickyBar) return;
+    const profitEl = document.getElementById('out-profit');
+    const roiEl = document.getElementById('out-roi');
+    if (!profitEl || !roiEl) return;
+
+    stickyProfitValue.textContent = profitEl.textContent;
+    stickyProfitValue.className = 'sticky-profit-value ' + profitEl.className;
+    stickyRoiValue.textContent = roiEl.textContent + ' ROI';
+
+    const calculatorVisible = !document.getElementById('view-calculator').classList.contains('hidden');
+    const isMobile = window.innerWidth <= 768;
+    stickyBar.classList.toggle('hidden', !(calculatorVisible && isMobile));
+}
+
+window.addEventListener('resize', updateStickyBar);
 
 // --- EVENT LISTENERS ---
 [resTypeSelect, useFocusCheckbox, citySelect].forEach(el => el.addEventListener('change', updateCityDropdown));
@@ -339,6 +432,7 @@ resetBtn.addEventListener('click', () => {
     autoFillRecipe('prev');
     updateCityDropdown();
     calculate();
+    try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
 });
 
 // --- NAVIGATION ---
@@ -352,6 +446,7 @@ navLinks.forEach(link => {
         navLinks.forEach(l => l.classList.remove('active'));
         link.classList.add('active');
         views.forEach(v => v.id === targetId ? v.classList.remove('hidden') : v.classList.add('hidden'));
+        updateStickyBar();
     });
 });
 
@@ -364,21 +459,49 @@ const modalBug = document.getElementById('modal-bug');
 const modalSupport = document.getElementById('modal-support');
 const bugInput = document.getElementById('bug-input');
 
-document.getElementById('link-discord').addEventListener('click', (e) => {
-    e.preventDefault();
-    window.open('https://discord.gg/yourinvitecode', '_blank');
-});
-
 document.getElementById('link-bug').addEventListener('click', (e) => { e.preventDefault(); modalBug.classList.remove('hidden'); });
 document.getElementById('bug-close').addEventListener('click', () => modalBug.classList.add('hidden'));
 
-document.getElementById('bug-submit').addEventListener('click', () => {
-    if (bugInput.value.trim() !== '') {
-        alert('Thank you! Your bug report has been submitted.');
+const bugStatus = document.getElementById('bug-status');
+const bugSubmitBtn = document.getElementById('bug-submit');
+
+document.getElementById('bug-submit').addEventListener('click', async () => {
+    const description = bugInput.value.trim();
+    if (description === '') {
+        bugStatus.textContent = 'Please describe the bug before submitting.';
+        bugStatus.className = 'form-status error';
+        return;
+    }
+
+    bugSubmitBtn.disabled = true;
+    bugSubmitBtn.textContent = 'Submitting...';
+    bugStatus.textContent = '';
+    bugStatus.className = 'form-status';
+
+    try {
+        const { error } = await supabaseClient.from('bug_reports').insert({
+            description: description,
+            page_url: window.location.href,
+            user_agent: navigator.userAgent
+        });
+
+        if (error) throw error;
+
+        bugStatus.textContent = 'Thank you! Your bug report has been submitted.';
+        bugStatus.className = 'form-status success';
         bugInput.value = '';
-        modalBug.classList.add('hidden');
-    } else {
-        alert('Please describe the bug before submitting.');
+        setTimeout(() => {
+            modalBug.classList.add('hidden');
+            bugStatus.textContent = '';
+            bugStatus.className = 'form-status';
+        }, 1500);
+    } catch (err) {
+        console.error('Bug report submission failed:', err);
+        bugStatus.textContent = 'Something went wrong. Please try again later.';
+        bugStatus.className = 'form-status error';
+    } finally {
+        bugSubmitBtn.disabled = false;
+        bugSubmitBtn.textContent = 'Submit Report';
     }
 });
 
@@ -391,6 +514,8 @@ window.addEventListener('click', (e) => {
 });
 
 // Initial Setup
+loadState();
 autoFillRecipe('prev');
-updateCityDropdown(); 
+updateCityDropdown();
 calculate();
+updateStickyBar();
