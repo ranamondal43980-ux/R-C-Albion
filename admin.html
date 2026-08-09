@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>R&C Albion — Admin</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body class="admin-body">
+
+    <div class="admin-wrapper">
+
+        <!-- LOGIN VIEW -->
+        <div id="login-view" class="admin-card">
+            <h1>Admin Login</h1>
+            <p class="admin-sub">R&C Albion — Bug Report Dashboard</p>
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" id="login-email" autocomplete="username">
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="login-password" autocomplete="current-password">
+            </div>
+            <p id="login-status" class="form-status"></p>
+            <button id="login-btn" class="copy-btn full-width-btn">Log In</button>
+        </div>
+
+        <!-- DASHBOARD VIEW -->
+        <div id="dashboard-view" class="admin-card wide hidden">
+            <div class="dashboard-header">
+                <div>
+                    <h1>Bug Reports</h1>
+                    <p class="admin-sub" id="logged-in-as"></p>
+                </div>
+                <button id="logout-btn" class="reset-btn">Log Out</button>
+            </div>
+            <p id="dashboard-status" class="form-status"></p>
+            <div id="reports-list" class="reports-list"></div>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

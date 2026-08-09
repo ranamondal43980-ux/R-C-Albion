@@ -1,0 +1,125 @@
+.admin-body {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 60px;
+}
+
+.admin-wrapper {
+    width: 100%;
+    max-width: 700px;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+.admin-card {
+    background: linear-gradient(180deg, rgba(24, 26, 32, 0.92) 0%, rgba(17, 18, 22, 0.97) 100%);
+    border: 1px solid var(--border-inner);
+    border-top: 2px solid var(--gold-dark);
+    border-radius: 6px;
+    padding: 30px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+    max-width: 380px;
+    margin: 0 auto;
+}
+
+.admin-card.wide {
+    max-width: 700px;
+}
+
+.admin-card h1 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold-bright);
+    font-size: 1.5rem;
+    margin: 0 0 4px 0;
+}
+
+.admin-sub {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin: 0 0 20px 0;
+}
+
+.admin-card .input-group {
+    margin-bottom: 16px;
+}
+
+.admin-card label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.admin-card input[type="email"],
+.admin-card input[type="password"] {
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--slot-bg);
+    border: 1px solid var(--border-inner);
+    border-radius: 4px;
+    padding: 10px 12px;
+    color: var(--text-title);
+    font-family: 'Outfit', sans-serif;
+}
+
+.full-width-btn {
+    width: 100%;
+    margin-top: 8px;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.reports-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.report-card {
+    background: var(--panel-surface);
+    border: 1px solid var(--border-inner);
+    border-radius: 4px;
+    padding: 14px 16px;
+}
+
+.report-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.75rem;
+}
+
+.report-date {
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.report-status {
+    text-transform: uppercase;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 3px;
+    background: var(--gold-glow);
+    color: var(--gold-bright);
+}
+
+.report-desc {
+    color: var(--text-main);
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 0 0 8px 0;
+}
+
+.report-footer {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    word-break: break-all;
+}
