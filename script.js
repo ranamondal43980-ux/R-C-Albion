@@ -464,11 +464,33 @@ document.getElementById('bug-close').addEventListener('click', () => modalBug.cl
 
 const bugStatus = document.getElementById('bug-status');
 const bugSubmitBtn = document.getElementById('bug-submit');
+const bugWebsiteField = document.getElementById('bug-website');
+const BUG_COOLDOWN_MS = 60000; // 1 minute between submissions
 
 document.getElementById('bug-submit').addEventListener('click', async () => {
     const description = bugInput.value.trim();
+
+    // Honeypot check: real users never fill this hidden field, bots often do
+    if (bugWebsiteField && bugWebsiteField.value.trim() !== '') {
+        bugStatus.textContent = 'Thank you! Your bug report has been submitted.';
+        bugStatus.className = 'form-status success';
+        bugInput.value = '';
+        bugWebsiteField.value = '';
+        setTimeout(() => modalBug.classList.add('hidden'), 1200);
+        return; // silently drop, pretend success so bots don't adapt
+    }
+
     if (description === '') {
         bugStatus.textContent = 'Please describe the bug before submitting.';
+        bugStatus.className = 'form-status error';
+        return;
+    }
+
+    const lastSubmit = parseInt(localStorage.getItem('rc-albion-last-bug-report') || '0', 10);
+    const now = Date.now();
+    if (now - lastSubmit < BUG_COOLDOWN_MS) {
+        const waitSec = Math.ceil((BUG_COOLDOWN_MS - (now - lastSubmit)) / 1000);
+        bugStatus.textContent = `Please wait ${waitSec}s before submitting another report.`;
         bugStatus.className = 'form-status error';
         return;
     }
@@ -487,6 +509,7 @@ document.getElementById('bug-submit').addEventListener('click', async () => {
 
         if (error) throw error;
 
+        localStorage.setItem('rc-albion-last-bug-report', String(now));
         bugStatus.textContent = 'Thank you! Your bug report has been submitted.';
         bugStatus.className = 'form-status success';
         bugInput.value = '';
