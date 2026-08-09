@@ -238,6 +238,13 @@
             </div>
         </div>
 
+        <!-- MOBILE STICKY PROFIT BAR (calculator view only) -->
+        <div id="sticky-profit-bar" class="sticky-profit-bar hidden">
+            <div class="sticky-profit-label">Net Profit</div>
+            <div id="sticky-profit-value" class="sticky-profit-value">0</div>
+            <div class="sticky-roi-value" id="sticky-roi-value">0.00% ROI</div>
+        </div>
+
         <!-- VIEW 2: PATCH NOTES -->
         <div id="view-patchnotes" class="app-view hidden">
             <div class="info-card">
@@ -271,12 +278,10 @@
         <footer class="app-footer">
             <p>R&C Albion | Advanced Refining Matrix</p>
             <div class="footer-links">
-                <a href="#" id="link-discord">Discord Server</a>
+                <a href="https://discord.com/invite/t3zv5NUB8R" id="link-discord" target="_blank" rel="noopener">Discord Server</a>
                 <a href="#" id="link-bug">Report a Bug</a>
                 <a href="#" id="link-support">Support the Creator</a>
-                
-                <!-- Updated Contact Us Link -->
-                <a href="mailto:your.email@example.com?subject=Business Inquiry" id="link-contact">Contact Us</a>
+                <a href="mailto:aizenhqbusiness@gmail.com?subject=Business Inquiry" id="link-contact">Contact Us</a>
             </div>
         </footer>
 
@@ -288,6 +293,7 @@
             <h3>Report a Bug</h3>
             <p>Found something inaccurate or broken? Let us know below:</p>
             <textarea id="bug-input" placeholder="Describe the issue..."></textarea>
+            <p id="bug-status" class="form-status"></p>
             <div class="modal-buttons">
                 <button id="bug-submit" class="copy-btn">Submit Report</button>
                 <button id="bug-close" class="reset-btn">Cancel</button>
@@ -301,8 +307,8 @@
             <h3>Support the Creator</h3>
             <p>If this calculator helped you make millions of silver in Albion, consider supporting the project!</p>
             <div class="support-box">
-                <p>🎮 <strong>In-Game Name:</strong> YourIgnHere</p>
-                <p>☕ <strong>Donations:</strong> ko-fi.com/rcalbion</p>
+                <p>🎮 <strong>In-Game Name:</strong> AizenHQ</p>
+                <p>☕ <strong>Donations:</strong> <a href="https://ko-fi.com/AizenHQ" target="_blank" rel="noopener">ko-fi.com/AizenHQ</a></p>
             </div>
             <div class="modal-buttons">
                 <button id="support-close" class="copy-btn">Close</button>
@@ -311,6 +317,8 @@
         
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
