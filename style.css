@@ -573,8 +573,19 @@ hr {
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    animation: fade-in 0.2s ease;
 }
 .modal-overlay.hidden { display: none !important; }
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes modal-pop {
+    from { opacity: 0; transform: translateY(10px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
 
 .modal-content {
     background-color: var(--panel-surface);
@@ -584,6 +595,7 @@ hr {
     width: 90%;
     max-width: 450px;
     box-shadow: 0 25px 60px rgba(0,0,0,0.9);
+    animation: modal-pop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .modal-content h3 {
@@ -683,6 +695,17 @@ hr {
     line-height: 1.6;
 }
 .hero-buttons { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+.hero-btn-primary, .hero-btn-secondary {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+.hero-btn-primary:hover, .hero-btn-secondary:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+.hero-btn-primary:active, .hero-btn-secondary:active {
+    transform: translateY(0);
+}
+
 .hero-btn-primary {
     background: linear-gradient(135deg, var(--gold-bright) 0%, var(--gold-muted) 100%);
     color: var(--bg-deep);
@@ -706,6 +729,68 @@ hr {
     text-transform: uppercase;
 }
 
+/* --- MOBILE STICKY PROFIT BAR --- */
+.sticky-profit-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 12px 18px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+    background: linear-gradient(180deg, rgba(17, 18, 22, 0.92) 0%, rgba(9, 10, 12, 0.98) 100%);
+    border-top: 2px solid var(--gold-dark);
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.7);
+    backdrop-filter: blur(10px);
+}
+
+.sticky-profit-bar.hidden { display: none; }
+
+.sticky-profit-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.sticky-profit-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: var(--text-main);
+    flex: 1;
+    text-align: center;
+}
+.sticky-profit-value.positive { color: var(--profit-green); }
+.sticky-profit-value.negative { color: var(--loss-red); }
+
+.sticky-roi-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+/* --- FORM STATUS MESSAGES (bug report) --- */
+.form-status {
+    min-height: 1.2em;
+    font-size: 0.85rem;
+    margin: 4px 0 0 0;
+}
+.form-status.success { color: var(--profit-green); }
+.form-status.error { color: var(--loss-red); }
+
+.support-box a {
+    color: var(--gold-bright);
+    text-decoration: underline;
+}
+
 @media (max-width: 950px) {
     .calculator-container { grid-template-columns: 1fr; }
 }
@@ -715,4 +800,5 @@ hr {
     .header-nav { justify-content: center; width: 100%; flex-wrap: wrap; }
     .grid-2 { grid-template-columns: 1fr; }
     .button-group { flex-direction: column; }
+    .calculator-container { padding-bottom: 70px; }
 }
