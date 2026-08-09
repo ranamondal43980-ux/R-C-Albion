@@ -91,7 +91,7 @@ async function loadReports() {
     }
 
     reportsList.innerHTML = data.map(report => `
-        <div class="report-card">
+        <div class="report-card" data-id="${report.id}">
             <div class="report-meta">
                 <span class="report-date">${new Date(report.created_at).toLocaleString()}</span>
                 <span class="report-status status-${(report.status || 'new').toLowerCase()}">${report.status || 'new'}</span>
@@ -100,8 +100,63 @@ async function loadReports() {
             <div class="report-footer">
                 <span class="report-url">${report.page_url ? escapeHtml(report.page_url) : ''}</span>
             </div>
+            <div class="report-actions">
+                ${report.status === 'resolved'
+                    ? `<button class="report-btn resolve-btn" data-action="unresolve" data-id="${report.id}">Mark Unresolved</button>`
+                    : `<button class="report-btn resolve-btn" data-action="resolve" data-id="${report.id}">Mark Resolved</button>`
+                }
+                <button class="report-btn delete-btn" data-action="delete" data-id="${report.id}">Delete</button>
+            </div>
         </div>
     `).join('');
+
+    reportsList.querySelectorAll('.report-btn').forEach(btn => {
+        btn.addEventListener('click', handleReportAction);
+    });
+}
+
+async function handleReportAction(e) {
+    const btn = e.currentTarget;
+    const id = btn.getAttribute('data-id');
+    const action = btn.getAttribute('data-action');
+
+    btn.disabled = true;
+
+    if (action === 'resolve' || action === 'unresolve') {
+        const newStatus = action === 'resolve' ? 'resolved' : 'new';
+        const { error } = await supabaseClient
+            .from('bug_reports')
+            .update({ status: newStatus })
+            .eq('id', id);
+
+        if (error) {
+            dashboardStatus.textContent = 'Could not update report: ' + error.message;
+            dashboardStatus.className = 'form-status error';
+            btn.disabled = false;
+            return;
+        }
+        loadReports();
+    }
+
+    if (action === 'delete') {
+        const confirmed = confirm('Delete this bug report permanently?');
+        if (!confirmed) {
+            btn.disabled = false;
+            return;
+        }
+        const { error } = await supabaseClient
+            .from('bug_reports')
+            .delete()
+            .eq('id', id);
+
+        if (error) {
+            dashboardStatus.textContent = 'Could not delete report: ' + error.message;
+            dashboardStatus.className = 'form-status error';
+            btn.disabled = false;
+            return;
+        }
+        loadReports();
+    }
 }
 
 function escapeHtml(str) {
