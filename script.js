@@ -366,6 +366,32 @@ function updateStickyBar() {
 
 window.addEventListener('resize', updateStickyBar);
 
+// --- INPUT VALIDATION ---
+const MAX_SAFE_VALUE = 999999999; // 999 million cap, prevents absurd overflow
+
+function sanitizeNumberInput(el) {
+    if (el.value === '') return; // allow empty while typing
+    let num = parseFloat(el.value);
+    if (isNaN(num) || !isFinite(num)) {
+        el.value = 0;
+        return;
+    }
+    if (num < 0) num = 0;
+    if (num > MAX_SAFE_VALUE) num = MAX_SAFE_VALUE;
+    // Snap to the field's own min/step precision (avoid float noise like 1.0000000002)
+    num = Math.round(num * 100) / 100;
+    if (String(num) !== el.value) el.value = num;
+}
+
+document.querySelectorAll('input[type="number"]').forEach(el => {
+    el.addEventListener('input', () => sanitizeNumberInput(el));
+    el.addEventListener('blur', () => {
+        if (el.value === '' || isNaN(parseFloat(el.value))) el.value = 0;
+        sanitizeNumberInput(el);
+        calculate();
+    });
+});
+
 // --- EVENT LISTENERS ---
 [resTypeSelect, useFocusCheckbox, citySelect].forEach(el => el.addEventListener('change', updateCityDropdown));
 [resTypeSelect, tierSelect, enchantSelect, citySelect, marketTaxSelect].forEach(el => {
