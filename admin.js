@@ -14,6 +14,7 @@ function showDashboard(session) {
     dashboardView.classList.remove('hidden');
     loggedInAs.textContent = `Logged in as ${session.user.email}`;
     loadReports();
+    loadStats();
 }
 
 function showLogin() {
@@ -163,6 +164,31 @@ function escapeHtml(str) {
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
+}
+
+async function loadStats() {
+    const statToday = document.getElementById('stat-today');
+    const statWeek = document.getElementById('stat-week');
+    const statTotal = document.getElementById('stat-total');
+
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+
+    try {
+        const [{ count: totalCount }, { count: weekCount }, { count: todayCount }] = await Promise.all([
+            supabaseClient.from('page_views').select('*', { count: 'exact', head: true }),
+            supabaseClient.from('page_views').select('*', { count: 'exact', head: true }).gte('created_at', sevenDaysAgo),
+            supabaseClient.from('page_views').select('*', { count: 'exact', head: true }).gte('created_at', startOfToday)
+        ]);
+
+        statTotal.textContent = totalCount ?? '—';
+        statWeek.textContent = weekCount ?? '—';
+        statToday.textContent = todayCount ?? '—';
+    } catch (e) {
+        console.warn('Could not load stats:', e);
+        statTotal.textContent = statWeek.textContent = statToday.textContent = 'N/A';
+    }
 }
 
 checkSession();
