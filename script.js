@@ -49,25 +49,97 @@ function setupCustomDropdowns() {
         const options = dropdown.querySelector('.dropdown-options');
         const hiddenInput = dropdown.nextElementSibling; 
 
+        // --- ACCESSIBILITY: make the trigger focusable and announce its role ---
+        selected.setAttribute('tabindex', '0');
+        selected.setAttribute('role', 'combobox');
+        selected.setAttribute('aria-haspopup', 'listbox');
+        selected.setAttribute('aria-expanded', 'false');
+        options.setAttribute('role', 'listbox');
+
+        let kbIndex = -1;
+
+        function getOptionEls() {
+            return Array.from(options.querySelectorAll('.dropdown-option'));
+        }
+
+        function clearHighlight() {
+            getOptionEls().forEach(o => o.classList.remove('kb-active'));
+        }
+
+        function highlight(index) {
+            const opts = getOptionEls();
+            if (opts.length === 0) return;
+            kbIndex = Math.max(0, Math.min(index, opts.length - 1));
+            clearHighlight();
+            opts[kbIndex].classList.add('kb-active');
+            opts[kbIndex].scrollIntoView({ block: 'nearest' });
+        }
+
+        function openDropdown(focusFirst) {
+            if (dropdown.classList.contains('disabled')) return;
+            document.querySelectorAll('.custom-dropdown').forEach(d => { if (d !== dropdown) closeDropdown(d); });
+            dropdown.classList.add('open');
+            selected.setAttribute('aria-expanded', 'true');
+            if (focusFirst) highlight(0);
+        }
+
+        function closeDropdown(d = dropdown) {
+            d.classList.remove('open');
+            const trigger = d.querySelector('.dropdown-selected');
+            if (trigger) trigger.setAttribute('aria-expanded', 'false');
+            clearHighlight();
+            kbIndex = -1;
+        }
+
+        function selectOption(optionEl) {
+            if (!optionEl) return;
+            selected.innerHTML = optionEl.innerHTML;
+            hiddenInput.value = optionEl.getAttribute('data-value');
+            closeDropdown();
+            hiddenInput.dispatchEvent(new Event('change'));
+        }
+
         selected.addEventListener('click', (e) => {
             if (dropdown.classList.contains('disabled')) return;
-            document.querySelectorAll('.custom-dropdown').forEach(d => { if (d !== dropdown) d.classList.remove('open'); });
-            dropdown.classList.toggle('open');
+            const isOpen = dropdown.classList.contains('open');
+            document.querySelectorAll('.custom-dropdown').forEach(d => { if (d !== dropdown) closeDropdown(d); });
+            if (isOpen) { closeDropdown(); } else { openDropdown(false); }
             e.stopPropagation();
+        });
+
+        selected.addEventListener('keydown', (e) => {
+            if (dropdown.classList.contains('disabled')) return;
+            const isOpen = dropdown.classList.contains('open');
+
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                if (!isOpen) { openDropdown(true); }
+                else if (kbIndex >= 0) { selectOption(getOptionEls()[kbIndex]); }
+                else { openDropdown(true); }
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (!isOpen) { openDropdown(true); }
+                else { highlight(kbIndex + 1); }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (!isOpen) { openDropdown(true); }
+                else { highlight(kbIndex - 1); }
+            } else if (e.key === 'Escape') {
+                if (isOpen) { e.preventDefault(); closeDropdown(); selected.focus(); }
+            }
         });
 
         options.addEventListener('click', (e) => {
             const option = e.target.closest('.dropdown-option');
-            if (option) {
-                selected.innerHTML = option.innerHTML;
-                hiddenInput.value = option.getAttribute('data-value');
-                dropdown.classList.remove('open');
-                hiddenInput.dispatchEvent(new Event('change'));
-            }
+            if (option) selectOption(option);
         });
     });
     document.addEventListener('click', () => {
-        document.querySelectorAll('.custom-dropdown').forEach(d => d.classList.remove('open'));
+        document.querySelectorAll('.custom-dropdown').forEach(d => {
+            d.classList.remove('open');
+            const trigger = d.querySelector('.dropdown-selected');
+            if (trigger) trigger.setAttribute('aria-expanded', 'false');
+        });
     });
 }
 
