@@ -315,6 +315,18 @@ input:disabled {
     color: var(--gold-bright);
 }
 
+.dropdown-option.kb-active {
+    background: linear-gradient(90deg, rgba(240, 200, 105, 0.18) 0%, transparent 100%);
+    color: var(--gold-bright);
+    outline: 1px solid var(--gold-muted);
+    outline-offset: -1px;
+}
+
+.dropdown-selected:focus-visible {
+    outline: 2px solid var(--gold-bright);
+    outline-offset: 2px;
+}
+
 /* --- RECIPE ROW --- */
 .recipe-row {
     display: flex;
