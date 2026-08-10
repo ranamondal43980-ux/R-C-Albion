@@ -634,8 +634,79 @@ window.addEventListener('click', (e) => {
     if (e.target === modalSupport) modalSupport.classList.add('hidden');
 });
 
+// --- LIGHTWEIGHT VISIT ANALYTICS (no cookies, no personal data) ---
+async function logPageView() {
+    try {
+        await supabaseClient.from('page_views').insert({
+            page_url: window.location.pathname
+        });
+    } catch (e) {
+        // fail silently, analytics should never break the site
+        console.warn('Analytics log failed:', e);
+    }
+}
+logPageView();
+
+// --- SHARE LINK ---
+const shareBtn = document.getElementById('share-btn');
+const SHARE_PARAM_IDS = [
+    'res-type', 'tier', 'enchant', 'city', 'use-focus', 'focus-cost',
+    'raw-qty', 'prev-qty', 'raw-price', 'prev-price', 'buy-order-fee',
+    'station-tax', 'sell-price', 'market-tax'
+];
+
+function buildShareUrl() {
+    const params = new URLSearchParams();
+    SHARE_PARAM_IDS.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        params.set(id, el.type === 'checkbox' ? (el.checked ? '1' : '0') : el.value);
+    });
+    return `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+}
+
+function applyShareParamsFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    if ([...params.keys()].length === 0) return false;
+
+    if (params.has('res-type')) {
+        resTypeSelect.value = params.get('res-type');
+        resTypeSelect.dispatchEvent(new Event('change'));
+    }
+    if (params.has('tier')) {
+        tierSelect.value = params.get('tier');
+    }
+
+    SHARE_PARAM_IDS.forEach(id => {
+        if (!params.has(id)) return;
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (el.type === 'checkbox') {
+            el.checked = params.get(id) === '1';
+        } else {
+            el.value = params.get(id);
+        }
+    });
+    return true;
+}
+
+if (shareBtn) {
+    shareBtn.addEventListener('click', () => {
+        const url = buildShareUrl();
+        navigator.clipboard.writeText(url).then(() => {
+            const originalText = shareBtn.innerText;
+            shareBtn.innerText = "✓ LINK COPIED!";
+            setTimeout(() => { shareBtn.innerText = originalText; }, 2000);
+        }).catch(() => {
+            shareBtn.innerText = "Copy failed";
+            setTimeout(() => { shareBtn.innerText = "Share Link"; }, 2000);
+        });
+    });
+}
+
 // Initial Setup
-loadState();
+const loadedFromShareLink = applyShareParamsFromUrl();
+if (!loadedFromShareLink) loadState();
 autoFillRecipe('prev');
 updateCityDropdown();
 calculate();
