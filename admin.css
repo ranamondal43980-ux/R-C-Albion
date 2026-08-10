@@ -77,6 +77,36 @@
     margin-bottom: 20px;
 }
 
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.stat-box {
+    background: var(--panel-surface);
+    border: 1px solid var(--border-inner);
+    border-radius: 4px;
+    padding: 16px;
+    text-align: center;
+}
+
+.stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--gold-bright);
+}
+
+.stat-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
 .reports-list {
     display: flex;
     flex-direction: column;
