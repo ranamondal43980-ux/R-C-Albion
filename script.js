@@ -215,6 +215,7 @@ function autoFillRecipe(source = 'prev') {
     
     if (tier === "T2") {
         prevName.value = "None"; prevQtyInput.disabled = true; prevPriceInput.disabled = true; prevIcon.style.display = 'none';
+        prevQtyInput.value = 0; prevPriceInput.value = 0;
     } else {
         const prevNum = parseInt(tier.replace("T","")) - 1;
         prevName.value = `T${prevNum} ${names.refined}`;
@@ -291,7 +292,9 @@ function calculate() {
     const marketTaxRate = parseFloat(marketTaxSelect.value) || 0;
 
     const crafts = tier === "T2" ? rawQty : prevQty;
-    const baseCost = (rawQty * rawPrice) + (prevQty * prevPrice);
+    const effectivePrevQty = tier === "T2" ? 0 : prevQty;
+    const effectivePrevPrice = tier === "T2" ? 0 : prevPrice;
+    const baseCost = (rawQty * rawPrice) + (effectivePrevQty * effectivePrevPrice);
     const buyOrderFee = isBuyOrder ? (baseCost * 0.025) : 0;
     const returnVal = baseCost * rrr;
     const totalStationFee = (stationTaxInput / 100) * rawQty;
@@ -665,6 +668,14 @@ function buildShareUrl() {
     return `${window.location.origin}${window.location.pathname}?${params.toString()}`;
 }
 
+function syncDropdownLabel(selectedElId, optionsElId, value) {
+    const selectedEl = document.getElementById(selectedElId);
+    const optionsEl = document.getElementById(optionsElId);
+    if (!selectedEl || !optionsEl) return;
+    const match = optionsEl.querySelector(`.dropdown-option[data-value="${value}"]`);
+    if (match) selectedEl.innerHTML = match.innerHTML;
+}
+
 function applyShareParamsFromUrl() {
     const params = new URLSearchParams(window.location.search);
     if ([...params.keys()].length === 0) return false;
@@ -672,9 +683,11 @@ function applyShareParamsFromUrl() {
     if (params.has('res-type')) {
         resTypeSelect.value = params.get('res-type');
         resTypeSelect.dispatchEvent(new Event('change'));
+        syncDropdownLabel('selected-res', 'options-res', resTypeSelect.value);
     }
     if (params.has('tier')) {
         tierSelect.value = params.get('tier');
+        syncDropdownLabel('selected-tier', 'options-tier', tierSelect.value);
     }
 
     SHARE_PARAM_IDS.forEach(id => {
@@ -687,6 +700,8 @@ function applyShareParamsFromUrl() {
             el.value = params.get(id);
         }
     });
+
+    syncDropdownLabel('selected-tax', 'options-tax', marketTaxSelect.value);
     return true;
 }
 
@@ -703,6 +718,136 @@ if (shareBtn) {
         });
     });
 }
+
+// --- TRANSPORT CALCULATOR ---
+const tBuyPriceInput = document.getElementById('t-buy-price');
+const tQuantityInput = document.getElementById('t-quantity');
+const tSetupFeeCheckbox = document.getElementById('t-setup-fee');
+const tSellPriceInput = document.getElementById('t-sell-price');
+const tMarketTaxSelect = document.getElementById('t-market-tax');
+const tSellSetupFeeCheckbox = document.getElementById('t-sell-setup-fee');
+const tResetBtn = document.getElementById('t-reset-btn');
+
+function calculateTransport() {
+    const buyPrice = parseFloat(tBuyPriceInput.value) || 0;
+    const quantity = parseFloat(tQuantityInput.value) || 0;
+    const hasSetupFee = tSetupFeeCheckbox.checked;
+    const sellPrice = parseFloat(tSellPriceInput.value) || 0;
+    const marketTaxRate = parseFloat(tMarketTaxSelect.value) || 0;
+    const hasSellSetupFee = tSellSetupFeeCheckbox.checked;
+
+    const buyCost = quantity * buyPrice;
+    const setupFee = hasSetupFee ? (buyCost * 0.025) : 0;
+    const totalCost = buyCost + setupFee;
+
+    const grossRevenue = quantity * sellPrice;
+    const marketTax = grossRevenue * marketTaxRate;
+    const sellSetupFee = hasSellSetupFee ? (grossRevenue * 0.025) : 0;
+    const netRevenue = grossRevenue - marketTax - sellSetupFee;
+
+    const profit = netRevenue - totalCost;
+    const profitPerItem = quantity > 0 ? (profit / quantity) : 0;
+    const roi = totalCost > 0 ? (profit / totalCost) * 100 : 0;
+
+    document.getElementById('t-out-buy-cost').textContent = Math.round(buyCost).toLocaleString();
+    document.getElementById('t-out-setup-fee').textContent = "-" + Math.round(setupFee).toLocaleString();
+    document.getElementById('t-out-total-cost').textContent = Math.round(totalCost).toLocaleString();
+    document.getElementById('t-out-gross-revenue').textContent = Math.round(grossRevenue).toLocaleString();
+    document.getElementById('t-out-market-tax').textContent = "-" + Math.round(marketTax).toLocaleString();
+    document.getElementById('t-out-sell-setup-fee').textContent = "-" + Math.round(sellSetupFee).toLocaleString();
+    document.getElementById('t-out-net-revenue').textContent = Math.round(netRevenue).toLocaleString();
+
+    const profitEl = document.getElementById('t-out-profit');
+    const roundedProfit = Math.round(profit);
+    profitEl.textContent = roundedProfit.toLocaleString();
+    if (roundedProfit > 0) {
+        profitEl.className = 'positive';
+        profitEl.textContent = "+" + profitEl.textContent;
+    } else if (roundedProfit < 0) {
+        profitEl.className = 'negative';
+    } else {
+        profitEl.className = '';
+    }
+
+    const perItemEl = document.getElementById('t-out-profit-per-item');
+    const roundedPerItem = Math.round(profitPerItem);
+    perItemEl.textContent = roundedPerItem.toLocaleString();
+    perItemEl.className = roundedPerItem > 0 ? 'positive' : (roundedPerItem < 0 ? 'negative' : '');
+    if (roundedPerItem > 0) perItemEl.textContent = "+" + perItemEl.textContent;
+
+    const roiEl = document.getElementById('t-out-roi');
+    roiEl.textContent = roi.toFixed(2) + "%";
+    roiEl.className = roi > 0 ? 'positive' : (roi < 0 ? 'negative' : '');
+
+    saveTransportState();
+}
+
+[tBuyPriceInput, tQuantityInput, tSellPriceInput].forEach(el => {
+    el.addEventListener('input', () => { sanitizeNumberInput(el); calculateTransport(); });
+    el.addEventListener('blur', () => {
+        if (el.value === '' || isNaN(parseFloat(el.value))) el.value = 0;
+        sanitizeNumberInput(el);
+        calculateTransport();
+    });
+});
+[tSetupFeeCheckbox, tMarketTaxSelect, tSellSetupFeeCheckbox].forEach(el => el.addEventListener('change', calculateTransport));
+
+tResetBtn.addEventListener('click', () => {
+    tBuyPriceInput.value = 0;
+    tQuantityInput.value = 0;
+    tSetupFeeCheckbox.checked = false;
+    tSellPriceInput.value = 0;
+    tSellSetupFeeCheckbox.checked = false;
+    tMarketTaxSelect.value = '0.04';
+    document.getElementById('selected-t-tax').innerHTML = 'Premium Account (4% Tax)';
+    calculateTransport();
+    try { localStorage.removeItem(TRANSPORT_STORAGE_KEY); } catch (e) {}
+});
+
+const TRANSPORT_STORAGE_KEY = 'rc-albion-transport-state';
+const TRANSPORT_PERSISTED_IDS = ['t-buy-price', 't-quantity', 't-setup-fee', 't-sell-price', 't-market-tax', 't-sell-setup-fee'];
+
+function saveTransportState() {
+    const state = {};
+    TRANSPORT_PERSISTED_IDS.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        state[id] = el.type === 'checkbox' ? el.checked : el.value;
+    });
+    state['selected-t-tax-html'] = document.getElementById('selected-t-tax').innerHTML;
+    try {
+        localStorage.setItem(TRANSPORT_STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {
+        console.warn('Could not save transport calculator state:', e);
+    }
+}
+
+function loadTransportState() {
+    let raw;
+    try {
+        raw = localStorage.getItem(TRANSPORT_STORAGE_KEY);
+    } catch (e) {
+        return false;
+    }
+    if (!raw) return false;
+    let state;
+    try {
+        state = JSON.parse(raw);
+    } catch (e) {
+        return false;
+    }
+    TRANSPORT_PERSISTED_IDS.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el || !(id in state)) return;
+        if (el.type === 'checkbox') el.checked = state[id];
+        else el.value = state[id];
+    });
+    if (state['selected-t-tax-html']) document.getElementById('selected-t-tax').innerHTML = state['selected-t-tax-html'];
+    return true;
+}
+
+loadTransportState();
+calculateTransport();
 
 // Initial Setup
 const loadedFromShareLink = applyShareParamsFromUrl();
