@@ -52,7 +52,7 @@ body {
     flex-direction: column;
     align-items: center;
     width: 100%;
-    max-width: 1100px;
+    max-width: 1500px;
 }
 
 .app-header {
@@ -132,7 +132,7 @@ body {
 .calculator-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 30px;
+    gap: 40px;
     width: 100%;
 }
 
